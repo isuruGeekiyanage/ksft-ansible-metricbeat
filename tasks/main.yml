@@ -1,56 +1,7 @@
-- name: Install Metricbeat on a server
-  hosts: all
-  become: yes
-  tasks:
-
-    - name: Download the Metricbeat tarball
-      get_url:
-        url: https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-8.13.0-linux-x86_64.tar.gz
-        dest: /tmp/metricbeat.tar.gz
-
-    - name: Ensure Metricbeat directory exists
-      file:
-        path: /opt/metricbeat
-        state: directory
-        mode: '0755'
-
-    - name: Extract Metricbeat tarball
-      unarchive:
-        src: /tmp/metricbeat.tar.gz
-        dest: /opt/metricbeat
-        creates: /opt/metricbeat/metricbeat-8.13.0-linux-x86_64
-        extra_opts: [--strip-components=1]
-        remote_src: yes
-
-    - name: Set file permissions
-      file:
-        path: /opt/metricbeat/metricbeat
-        mode: '0755'
-
-    - name: Configure Metricbeat
-      template:
-        src: templates/metricbeat.yml.j2
-        dest: /opt/metricbeat/metricbeat.yml
-
-
-    - name: Enable and Configure system module
-      command: /opt/metricbeat/metricbeat modules enable system
-      args:
-        chdir: /opt/metricbeat
-
-
-    - name: Enable and Configure apache module
-      command: /opt/metricbeat/metricbeat modules enable apache
-      args:
-        chdir: /opt/metricbeat
-
-    - name: Create Metricbeat service
-      template:
-        src: templates/metricbeat.service.j2
-        dest: /etc/systemd/system/metricbeat.service
-
-    - name: Start and enable Metricbeat service
-      systemd:
-        name: metricbeat
-        state: started
-        enabled: yes
+---
+- name: Install nginx
+  apt:
+    name:
+      - nginx
+    state: latest
+    update_cache: yes
